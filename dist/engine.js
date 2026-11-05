@@ -1,4 +1,4 @@
-/* Tüsinu mutation engine: lexical analysis, verified against supplied tests. */
+/* CodeProof mutation engine: lexical analysis, verified against supplied tests. */
 (function(root){
 const swaps={'===':'!==','!==':'===','==':'!=','!=':'==','<=':'<','>=':'>','<':'<=','>':'>=','+':'-','-':'+','&&':'||','||':'&&'};
 function tokens(code){
