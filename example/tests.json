@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Обычный заказ",
+    "expression": "orderTotal(1000,2,false)",
+    "expected": 3000
+  },
+  {
+    "name": "Бесплатная доставка на границе",
+    "expression": "delivery(10000)",
+    "expected": 0
+  },
+  {
+    "name": "Доставка ниже порога",
+    "expression": "delivery(9999)",
+    "expected": 1000
+  },
+  {
+    "name": "Скидка участнику",
+    "expression": "discount(6000,true)",
+    "expected": 5400
+  },
+  {
+    "name": "Без скидки для гостя",
+    "expression": "discount(6000,false)",
+    "expected": 6000
+  },
+  {
+    "name": "Итог с бесплатной доставкой",
+    "expression": "orderTotal(6000,2,false)",
+    "expected": 12000
+  }
+]
