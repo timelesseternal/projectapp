@@ -1,4 +1,4 @@
-/* CodeProof mutation engine: lexical analysis, verified against supplied tests. */
+/* CodeSense mutation engine: lexical analysis, verified against supplied tests. */
 (function(root){
 const swaps={'===':'!==','!==':'===','==':'!=','!=':'==','<=':'<','>=':'>','<':'<=','>':'>=','+':'-','-':'+','&&':'||','||':'&&'};
 function tokens(code){

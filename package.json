@@ -1,8 +1,8 @@
 {
-  "name": "codeproof",
+  "name": "codesense",
   "version": "1.0.0",
   "private": true,
-  "description": "CodeProof — интерактивный P2P аудит понимания кода",
+  "description": "CodeSense — интерактивный P2P аудит понимания кода",
   "scripts": {
     "start": "node server.cjs",
     "test": "node test.cjs && node integration-test.cjs"
