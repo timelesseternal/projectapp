@@ -1,8 +1,334 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="CodeSense — интерактивный P2P аудит понимания кода"><title>CodeSense — понимание в действии</title><link rel="icon" href="logo.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css"></head><body>
-<aside class="sidebar"><a class="brand" href="./"><img src="logo.svg" alt=""><span>CodeSense<span class="brand-dot">.</span></span></a><div class="school">P2P AUDIT WORKSPACE</div><nav><button class="nav active" data-view="setup">◈ <span>Новый аудит</span></button><button class="nav" data-view="workspace">⌘ <span>Рабочая область</span></button><button class="nav" data-view="report">▤ <span>Результат защиты</span></button></nav><div class="side-bottom"><span class="live-dot"></span> Локальный прототип<br><small>Создано для Tomorrow School<br>JavaScript · без LLM-подсказок</small></div></aside>
-<main><header><div id="breadcrumb">Рабочее пространство <span>/ Новый аудит</span></div><div class="avatar">TS</div></header>
-<section id="setup" class="view"><div class="eyebrow">ТВОЙ КОД. ТВОЁ ПОНИМАНИЕ.</div><h1>Код работает.<br><span>А ты понимаешь почему?</span></h1><p class="lead">Три небольших изменения в твоём проекте.<br>Десять минут, чтобы разобраться и восстановить логику.</p><div class="setup-grid"><div class="upload-panel"><div class="section-number">01 / ПОДГОТОВКА</div><h2>Начнём с проекта</h2><p>Загрузите исходники JavaScript и тесты или откройте готовый пример.</p><label class="drop" id="drop"><span class="upload-icon">↥</span><strong>Перетащите файлы сюда</strong><span>.js и tests.json · до 1 МБ · без зависимостей</span><input type="file" id="upload" accept=".js,.json" multiple><span class="file-select">Выбрать файлы</span></label><div class="upload-status" id="files-status">Демо-проект: расчёт заказа · 6 тестов</div><div class="actions"><button class="primary" id="prepare">Создать аудит <span>↗</span></button><button class="secondary" id="demo">Загрузить пример</button></div><div class="hint">Тесты: [{"name":"Название", "expression":"total(100, 2)", "expected":200}]. Поддерживаются обычные скрипты без import/export.</div></div><div class="intro-art"><div class="art-label">UNDERSTANDING / IN ACTION</div><img src="logo.svg" alt="Знак CodeSense: скобки кода и галочка"><div class="art-caption"><strong>CodeSense</strong><span>Проверка понимания кода</span></div></div></div><div class="steps"><div><b>01</b><span>Загрузить проект</span></div><div><b>02</b><span>Получить 3 мутации</span></div><div><b>03</b><span>Защитить за 10 минут</span></div><div><b>04</b><span>Обсудить результат</span></div></div></section>
-<section id="workspace" class="view hidden"><div class="workspace-title"><div><div class="eyebrow">LIVE CODE MUTATION ENGINE</div><h1 class="compact">Проверка понимания</h1></div><div class="timer" id="timer">10:00</div></div><div class="toolbar"><span id="session-state">Аудит не подготовлен</span><div><button id="auditor-open" class="secondary">Экран аудитора ↗</button><button id="start" class="primary" disabled>Начать защиту</button></div></div><div class="editor-layout"><div class="file-tree"><div class="section-number">ПРОЕКТ</div><div id="file-list"></div><div id="analysis"></div></div><div class="editor-pane"><div class="editor-head"><span id="filename">project.js</span><span>JavaScript</span></div><textarea id="editor" spellcheck="false" aria-label="Редактор исходного кода" disabled></textarea><div class="editor-footer"><span>Подсказки ИИ отключены</span><span>UTF-8 / JS</span></div></div></div><div class="test-area"><div class="test-heading"><h2>Проверка поведения</h2><div><button id="run" class="primary" disabled>▷ Запустить тесты</button><button id="finish" class="secondary" disabled>Завершить защиту</button></div></div><div id="test-results" class="muted">Результаты появятся после запуска тестов.</div></div><div class="finding"><label for="explanation">Что вы обнаружили и почему это ошибка?</label><textarea id="explanation" placeholder="Объясните найденную причину и своё исправление…" disabled></textarea><button class="secondary" id="record" disabled>Зафиксировать наблюдение</button></div></section>
-<section id="report" class="view hidden"><div class="eyebrow">РЕЗУЛЬТАТ P2P-АУДИТА</div><h1 class="compact">Понимание видно в работе</h1><div id="report-content"><p class="lead">Завершите защиту, чтобы получить отчёт.</p></div></section>
-<section id="auditor" class="view hidden"><div class="eyebrow">РЕЖИМ АУДИТОРА / ОТДЕЛЬНОЕ ОКНО</div><h1 class="compact">Ход защиты</h1><p class="muted">Окна синхронизируются на этом устройстве. Локальное разделение ролей не заменяет серверную авторизацию.</p><div id="auditor-content">Ожидание активной сессии…</div></section>
-<footer>CodeSense © 2026 <span>Понимание важнее догадок</span></footer></main><div id="toast" role="status"></div><script src="engine.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="CodeSense — интерактивный P2P аудит понимания кода для Tomorrow School">
+  <title>CodeSense — Live Code Mutation Engine · Tomorrow School</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="./">
+      <img src="logo.svg" alt="">
+      <span>CodeSense<span class="brand-dot">.</span></span>
+    </a>
+    <div class="school">TOMORROW SCHOOL · P2P ENGINE</div>
+    <nav>
+      <button class="nav active" data-view="setup">◈ <span>Новый аудит</span></button>
+      <button class="nav" data-view="workspace">⌘ <span>Рабочая область</span></button>
+      <button class="nav" data-view="auditor">👁 <span>Экран аудитора</span></button>
+      <button class="nav" data-view="report">▤ <span>Результат защиты</span></button>
+      <button class="nav" data-view="database">🎓 <span>База: Учителя и Студенты</span></button>
+    </nav>
+    <div class="role-switcher">
+      <div class="section-number">БЫСТРЫЙ ВХОД (ДЕМО РОЛИ)</div>
+      <div class="role-pills">
+        <button type="button" class="role-pill" data-quick-login="student">Студент</button>
+        <button type="button" class="role-pill" data-quick-login="auditor">Аудитор</button>
+        <button type="button" class="role-pill" data-quick-login="teacher">Учитель</button>
+      </div>
+    </div>
+    <div class="side-bottom">
+      <span class="live-dot"></span> <span id="db-indicator">SQLite БД подключена</span><br>
+      <small>Tomorrow School · P2P Audit<br>JS · Go · Rust · Anti-LLM Guard</small>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div id="breadcrumb">Рабочее пространство <span>/ Новый аудит</span></div>
+      <div class="header-right">
+        <div class="user-badge" id="user-badge">
+          <span class="role-tag" id="current-role-tag">СТУДЕНТ</span>
+          <strong id="current-user-name">Алихан Садыков</strong>
+        </div>
+        <button type="button" class="secondary small-btn" id="open-auth-modal">Аккаунт / Вход</button>
+      </div>
+    </header>
+
+    <!-- VIEW 1: SETUP (ПРИЁМ КОДА, GITHUB ИМПОРТ, ШАБЛОНЫ GO/RUST/JS) -->
+    <section id="setup" class="view">
+      <div class="eyebrow">КЕЙС 3 · LIVE CODE MUTATION ENGINE · ИИ-АУДИТОР ПОНИМАНИЯ КОДА</div>
+      <h1>Код работает.<br><span>А ты понимаешь почему?</span></h1>
+      <p class="lead">Система принимает проект студента (Go, Rust, JavaScript), анализирует структуру программы и создаёт 3 логические мутации. У студента есть 10 минут без LLM-помощников, чтобы найти и исправить ошибки.</p>
+
+      <div class="setup-grid">
+        <div class="upload-panel">
+          <div class="section-number">01 / ЗАГРУЗКА ПРОЕКТА ИЛИ ИМПОРТ РЕПОЗИТОРИЯ</div>
+          <h2>Начнём с проекта студента</h2>
+          <p>Импортируйте GitHub-репозиторий, выберите готовый кейс на Go / Rust / JS или перетащите файлы проекта.</p>
+
+          <!-- GitHub Repository Import & Language Templates -->
+          <div class="github-box">
+            <label class="field-label" for="github-url">Импорт из GitHub-репозитория или выбор языка (Go / Rust / JS)</label>
+            <div class="github-row">
+              <input type="text" id="github-url" placeholder="https://github.com/tomorrow-school/go-order-engine">
+              <button type="button" class="secondary" id="github-import-btn">Импортировать GitHub</button>
+            </div>
+            <div class="template-chips">
+              <span>Примеры из кейса:</span>
+              <button type="button" class="chip active-chip" id="demo" data-template="js-order">JS: Расчёт заказа</button>
+              <button type="button" class="chip" data-template="go-order">Go: Биллинг и доставка</button>
+              <button type="button" class="chip" data-template="rust-rating">Rust: Рейтинг P2P-пула</button>
+            </div>
+          </div>
+
+          <!-- Participant Selection from DB -->
+          <div class="participants-row">
+            <div>
+              <label class="field-label" for="select-student">Защищающийся студент (из БД)</label>
+              <select id="select-student">
+                <option value="Алихан Садыков">Алихан Садыков (Go & JS · Wave 4)</option>
+                <option value="Дана Касымова">Дана Касымова (Rust · Wave 4)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="select-auditor">Проверяющий P2P-аудитор (из БД)</label>
+              <select id="select-auditor">
+                <option value="Тимур Бектуров">Тимур Бектуров (Senior Peer · Wave 3)</option>
+                <option value="Арман Есенов">Арман Есенов (Lead Mentor)</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="drop" id="drop">
+            <span class="upload-icon">↥</span>
+            <strong>Перетащите файлы проекта сюда</strong>
+            <span>.js, .go, .rs и tests.json · до 1 МБ · автоматическая верификация</span>
+            <input type="file" id="upload" accept=".js,.go,.rs,.json" multiple>
+            <span class="file-select">Выбрать файлы с компьютера</span>
+          </label>
+
+          <div class="upload-status" id="files-status">Демо-проект: расчёт заказа · 6 тестов</div>
+
+          <div class="actions">
+            <button class="primary" id="prepare">Создать аудит (3 мутации) <span>↗</span></button>
+            <div class="join-box">
+              <input type="text" id="join-code-input" placeholder="Код комнаты (TS-101)">
+              <button type="button" class="secondary" id="join-room-btn">Подключиться</button>
+            </div>
+          </div>
+
+          <div class="hint">
+            Формат tests.json: <code>[{"name":"Название", "expression":"orderTotal(1000, 2, false)", "expected":3000}]</code>. Каждая из 3 мутаций проверяется тестами автоматически.
+          </div>
+        </div>
+
+        <div class="intro-art">
+          <div class="art-label">TOMORROW SCHOOL · P2P CODE REVIEW</div>
+          <img src="logo.svg" alt="Знак CodeSense: скобки кода и галочка">
+          <div class="case-checklist">
+            <div class="check-item">✓ <b>1. Приём кода:</b> файлы .js/.go/.rs + GitHub-импорт</div>
+            <div class="check-item">✓ <b>2. Анализ структуры:</b> функции, ветвления, циклы</div>
+            <div class="check-item">✓ <b>3. Три мутации:</b> границы, логика, арифметика</div>
+            <div class="check-item">✓ <b>4. Среда студента:</b> редактор, запуск и тесты</div>
+            <div class="check-item">✓ <b>5. Защита 10 минут:</b> таймер + Anti-LLM контроль</div>
+            <div class="check-item">✓ <b>6. Экран аудитора:</b> live-код, карта мутаций, чек-лист</div>
+            <div class="check-item">✓ <b>7. Итоговый отчёт и БД:</b> роли учителей и студентов</div>
+          </div>
+          <div class="art-caption">
+            <strong>CodeSense 2.0</strong>
+            <span>Проверка реального понимания кода</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div><b>01</b><span>Загрузить проект или GitHub</span></div>
+        <div><b>02</b><span>Анализ и 3 мутации кода</span></div>
+        <div><b>03</b><span>P2P-защита за 10 минут</span></div>
+        <div><b>04</b><span>Оценка аудитора и запись в БД</span></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: WORKSPACE (РАБОЧАЯ ОБЛАСТЬ СТУДЕНТА + ТАЙМЕР 10 МИНУТ + ANTI-LLM) -->
+    <section id="workspace" class="view hidden">
+      <div class="workspace-title">
+        <div>
+          <div class="eyebrow">LIVE CODE MUTATION ENGINE · РЕЖИМ ЗАЩИТЫ СТУДЕНТА</div>
+          <h1 class="compact">Проверка понимания кода</h1>
+        </div>
+        <div class="timer-group">
+          <div class="room-pill" id="room-code-badge">КОМНАТА: ЛОКАЛЬНАЯ</div>
+          <div class="timer" id="timer">10:00</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div>
+          <span id="session-state">Аудит не подготовлен</span>
+          <span class="meta-participants" id="session-participants"></span>
+        </div>
+        <div class="toolbar-buttons">
+          <span class="anti-llm-badge" id="anti-llm-status" title="Контроль переключения вкладок и больших вставок">🛡 Anti-LLM: Чисто</span>
+          <button id="auditor-open" class="secondary">Экран аудитора ↗</button>
+          <button id="start" class="primary" disabled>Начать защиту (10:00)</button>
+        </div>
+      </div>
+
+      <div class="editor-layout">
+        <div class="file-tree">
+          <div class="section-number">ФАЙЛЫ ПРОЕКТА</div>
+          <div id="file-list"></div>
+          <div class="section-number" style="margin-top:22px">СТРУКТУРА ПРОГРАММЫ</div>
+          <div id="analysis"></div>
+          <div id="structure-details" class="structure-details"></div>
+        </div>
+        <div class="editor-pane">
+          <div class="editor-head">
+            <span id="filename">order.js</span>
+            <span id="editor-lang-badge">JavaScript · 3 активные мутации</span>
+          </div>
+          <textarea id="editor" spellcheck="false" aria-label="Редактор исходного кода" disabled></textarea>
+          <div class="editor-footer">
+            <span>🔒 LLM-помощники запрещены · Фокус окна отслеживается</span>
+            <span id="editor-cursor-info">UTF-8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-area">
+        <div class="test-heading">
+          <div>
+            <h2>Проверка поведения и запуск тестов</h2>
+            <p class="muted small-text">Запустите программу, проанализируйте несовпадения ожидаемых и фактических значений и исправьте все 3 логические мутации.</p>
+          </div>
+          <div>
+            <button id="run" class="primary" disabled>▷ Запустить тесты</button>
+            <button id="finish" class="secondary" disabled>Завершить защиту</button>
+          </div>
+        </div>
+        <div id="test-results" class="muted">Результаты появятся после запуска тестов.</div>
+      </div>
+
+      <div class="finding">
+        <label for="explanation">Фиксация найденных ошибок (объясните, какие мутации вы нашли и почему они нарушали логику):</label>
+        <textarea id="explanation" placeholder="Например: В функции delivery условие >= 10000 было изменено на > 10000, из-за чего граничный заказ платил за доставку…" disabled></textarea>
+        <div class="finding-actions">
+          <button class="secondary" id="record" disabled>Зафиксировать наблюдение</button>
+          <span id="notes-counter" class="muted small-text">Наблюдений записано: 0</span>
+        </div>
+        <div id="student-notes-list" class="notes-preview"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: AUDITOR (ИНТЕРФЕЙС ПРОВЕРЯЮЩЕГО P2P-АУДИТОРА) -->
+    <section id="auditor" class="view hidden">
+      <div class="workspace-title">
+        <div>
+          <div class="eyebrow">РЕЖИМ АУДИТОРА / НАБЛЮДЕНИЕ ЗА ЗАЩИТОЙ В РЕАЛЬНОМ ВРЕМЕНИ</div>
+          <h1 class="compact">Панель P2P-аудитора</h1>
+        </div>
+        <div class="auditor-controls">
+          <button type="button" class="secondary" id="refresh-auditor-btn">↻ Обновить из БД</button>
+        </div>
+      </div>
+      <p class="muted">Аудитор видит скрытую от студента карту 3 мутаций, живой код студента, результаты запусков тестов, события Anti-LLM контроля и подтверждает реальное понимание кода.</p>
+      <div id="auditor-content">Ожидание активной сессии… Создайте аудит во вкладке «Новый аудит» или выберите сессию в базе данных.</div>
+    </section>
+
+    <!-- VIEW 4: REPORT (ИТОГОВЫЙ РЕЗУЛЬТАТ P2P-ЗАЩИТЫ) -->
+    <section id="report" class="view hidden">
+      <div class="eyebrow">РЕЗУЛЬТАТ P2P-АУДИТА · ИТОГОВОЕ ЗАКЛЮЧЕНИЕ</div>
+      <h1 class="compact">Понимание видно в работе</h1>
+      <div id="report-content">
+        <p class="lead">Завершите защиту, чтобы сформировать подробный отчёт по 3 мутациям.</p>
+      </div>
+    </section>
+
+    <!-- VIEW 5: DATABASE (БАЗА ДАННЫХ УЧИТЕЛЕЙ, АУДИТОРОВ, СТУДЕНТОВ И ИСТОРИЯ АУДИТОВ) -->
+    <section id="database" class="view hidden">
+      <div class="workspace-title">
+        <div>
+          <div class="eyebrow">TOMORROW SCHOOL · УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ И АРХИВ ЗАЩИТ (SQLITE DB)</div>
+          <h1 class="compact">Учителя, Аудиторы и Студенты</h1>
+        </div>
+        <div>
+          <button type="button" class="primary" id="open-register-btn">+ Добавить пользователя в БД</button>
+        </div>
+      </div>
+
+      <div class="stats" id="school-stats">
+        <div><b id="stat-users">4</b><span>Пользователей в БД</span></div>
+        <div><b id="stat-audits">1</b><span>Проведено P2P-аудитов</span></div>
+        <div><b id="stat-pass-rate">100%</b><span>Успешных защит</span></div>
+      </div>
+
+      <div class="db-grid">
+        <div class="db-card">
+          <div class="section-number">СПИСОК ПОЛЬЗОВАТЕЛЕЙ (УЧИТЕЛЯ / АУДИТОРЫ / СТУДЕНТЫ)</div>
+          <h2>Участники Tomorrow School</h2>
+          <div id="users-table-container">Загрузка пользователей…</div>
+        </div>
+
+        <div class="db-card">
+          <div class="section-number">ЖУРНАЛ СЕССИЙ P2P-АУДИТА В БАЗЕ ДАННЫХ</div>
+          <h2>История и активные проверки</h2>
+          <div id="audits-table-container">Загрузка аудитов…</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>CodeSense © 2026 · Кейс 3: Live Code Mutation Engine (Tomorrow School)</span>
+      <span>Понимание важнее догадок · SQLite + Node.js</span>
+    </footer>
+  </main>
+
+  <!-- MODAL: АВТОРИЗАЦИЯ И РЕГИСТРАЦИЯ В БАЗЕ ДАННЫХ -->
+  <div class="modal-backdrop hidden" id="auth-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="section-number">АВТОРИЗАЦИЯ И БАЗА ДАННЫХ</div>
+          <h2 id="auth-modal-title">Вход и регистрация</h2>
+        </div>
+        <button type="button" class="close-btn" id="close-auth-modal">✕</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tab-login">Вход в аккаунт</button>
+        <button type="button" class="auth-tab" id="tab-register">Регистрация в БД</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <label class="field-label">Логин или Email</label>
+        <input type="text" id="login-username" value="teacher" placeholder="student / auditor / teacher" required>
+        <label class="field-label">Пароль</label>
+        <input type="password" id="login-password" value="teacher123" placeholder="Введите пароль" required>
+        <div class="demo-credentials">
+          <small>Готовые аккаунты в БД:</small><br>
+          <code>student / student123</code> (Студент) · <code>auditor / auditor123</code> (Аудитор) · <code>teacher / teacher123</code> (Учитель/Ментор)
+        </div>
+        <button type="submit" class="primary full-btn">Войти в систему</button>
+      </form>
+
+      <form id="register-form" class="auth-form hidden">
+        <label class="field-label">Имя и Фамилия</label>
+        <input type="text" id="reg-name" placeholder="Например: Айгерим Нурланова" required>
+        <label class="field-label">Логин</label>
+        <input type="text" id="reg-username" placeholder="aigerim" required>
+        <label class="field-label">Email</label>
+        <input type="email" id="reg-email" placeholder="aigerim@tomorrow.school" required>
+        <label class="field-label">Роль в Tomorrow School</label>
+        <select id="reg-role">
+          <option value="student">Студент (защищает код)</option>
+          <option value="auditor">P2P-Аудитор (проверяющий студент)</option>
+          <option value="teacher">Преподаватель / Ментор школы</option>
+        </select>
+        <label class="field-label">Когорта / Направление</label>
+        <input type="text" id="reg-cohort" value="Go & Rust Track · Wave 4" placeholder="Go & Rust Track · Wave 4">
+        <label class="field-label">Пароль</label>
+        <input type="password" id="reg-password" value="pass1234" required>
+        <button type="submit" class="primary full-btn">Зарегистрировать в БД</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

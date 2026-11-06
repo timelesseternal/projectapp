@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: codesense-p2p-audit
+    runtime: node
+    plan: free
+    buildCommand: echo "No external build dependencies required"
+    startCommand: node server.cjs
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      - key: PORT
+        value: 4173
